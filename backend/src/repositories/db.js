@@ -11,20 +11,19 @@ const options = {
     password: process.env.DB_PASSWORD,
 };
 
-const queryDatabase = (query, params) => {
+const queryDatabase = (query, params = []) => {
     return new Promise((resolve, reject) => {
         Firebird.attach(options, (err, db) => {
             if (err) {
-                reject(err);
-                return;
+                return reject(err);
             }
             db.query(query, params, (err, result) => {
                 db.detach();
                 
                 if (err) {
-                    reject(err);
-                } else {
-                    resolve(result);
+                    return reject(err);
+                }else {
+                    return resolve(result);
                 }
             });
         });
