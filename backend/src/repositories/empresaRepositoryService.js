@@ -27,3 +27,31 @@ export async function createEmpresa(empresa) {
     );
     return newId;
 }
+
+export async function updateEmpresa(id, empresa) {
+    const query = `
+        UPDATE EMPRESAS 
+        SET INSCRICAO_ESTADUAL = ?, 
+            CNPJ = ?, 
+            RAZAO_SOCIAL = ?, 
+            REGIME_TRIBUTARIO = ?, 
+            CNAE = ?
+        WHERE ID = ?
+    `;
+
+    const result = await queryDatabase(query, [
+        empresa.inscricaoEstadual,
+        empresa.cnpj,
+        empresa.razaoSocial,
+        empresa.regimeTributario,
+        empresa.cnae,
+        id
+    ]);
+
+    return result;
+}
+
+export async function deleteEmpresa(id) {
+    const query = 'DELETE FROM EMPRESAS WHERE ID = ?';
+    return await queryDatabase(query, [id]);
+}

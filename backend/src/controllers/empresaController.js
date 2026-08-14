@@ -1,4 +1,4 @@
-import { findAll, findById, createEmpresa as createEmpresaRepo } from '../repositories/empresaRepositoryService.js';
+import { findAll, findById, createEmpresa as createEmpresaRepo, updateEmpresa as updateEmpresaRepo, deleteEmpresa as deleteEmpresaRepo } from '../repositories/empresaRepositoryService.js';
 
 export const getEmpresas = async (req, res) => {
     try {
@@ -63,3 +63,43 @@ export const createEmpresa = async (req, res) => {
         });
     };
 };
+
+export async function updateEmpresa(req, res) {
+    try {
+        const { id } = req.params;
+        const empresaData = req.body;
+
+        const empresaExistente = await findById(id);
+        if (!empresaExistente) {
+            return res.status(404).json({ message: "Empresa não encontrada." });
+        }
+
+        await updateEmpresaRepo(id, empresaData);
+
+        return res.status(200).json({ 
+            message: "Empresa atualizada com sucesso.",
+            id: Number(id)
+        });
+    } catch (error) {
+        console.error("Erro ao atualizar empresa:", error);
+        return res.status(500).json({ error: "Erro interno ao atualizar empresa." });
+    }
+}
+
+export async function deleteEmpresa(req, res) {
+    try {
+        const { id } = req.params;
+
+        const empresaExistente = await findById(id);
+        if (!empresaExistente) {
+            return res.status(404).json({ message: "Empresa não encontrada." });
+        }
+
+        await deleteEmpresaRepo(id);
+
+        return res.status(200).json({ message: "Empresa removida com sucesso." });
+    } catch (error) {
+        console.error("Erro ao deletar empresa:", error);
+        return res.status(500).json({ error: "Erro interno ao deletar empresa." });
+    }
+}
