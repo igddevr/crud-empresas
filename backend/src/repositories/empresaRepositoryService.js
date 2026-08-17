@@ -1,7 +1,10 @@
 import { queryDatabase } from './db.js';
 
-export async function findAll() {
-    const empresas = await queryDatabase('SELECT * FROM EMPRESAS');
+export async function findAll(limit, skip) {
+    const empresas = await queryDatabase(
+        'SELECT FIRST ? SKIP ? ID, INSCRICAO_ESTADUAL, CNPJ, RAZAO_SOCIAL, REGIME_TRIBUTARIO, CNAE FROM EMPRESAS ORDER BY ID ASC',
+        [limit, skip]
+    );
     return empresas;
 }
 

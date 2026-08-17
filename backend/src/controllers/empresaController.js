@@ -2,9 +2,24 @@ import { findAll, findById, createEmpresa as createEmpresaRepo, updateEmpresa as
 
 export const getEmpresas = async (req, res) => {
     try {
-        const empresas = await findAll();
-        return res.status(200).json(empresas);
+        
+        const { page = 1, limit = 20 } = req.query;
+
+        const pageCount = parseInt(page);
+        const limitCount = parseInt(limit);
+
+        const skipCount = (pageCount - 1) * limitCount;
+
+        const empresas = await findAll(limitCount, skipCount);
+        
+        return res.status(200).json({
+            "page": pageCount,
+            "limit": limitCount,
+            "data": empresas
+        });
+    
     } catch (error) {
+        
         console.error('Erro na consulta Firebird:', error);
 
         return res.status(500).json({ 
