@@ -9,27 +9,31 @@ function App() {
   const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [searchInput, setSearchInput] = useState('')
+  const [appliedSearch, setAppliedSearch] = useState('')
 
   async function fetchEmpresas() {
     setLoading(true)
     setError(null)
 
     try {
-      const response = await api.get(`/empresas?page=${page}&limit=20`)
+      const response = await api.get(`/empresas?page=${page}&limit=20&search=${appliedSearch}`)
       setEmpresas(response.data.data)
     } catch (err) {
       setError('Erro ao buscar empresas. Por favor, tente novamente mais tarde.')
     } finally {
       setLoading(false)
     }
-  }
+  };
 
-  useEffect(() => {
-    fetchEmpresas()
-  }, [page])
-
+  async function handleSearch() {
+    setAppliedSearch(searchInput)
+    setPage(1)
+  };
+  
   async function handleDelete(id) {
     if (!window.confirm('Tem certeza que deseja excluir esta empresa?')) {
+      fetchEmpresas()
       return
     }
 
@@ -39,13 +43,53 @@ function App() {
     } catch (err) {
       setError('Erro ao excluir empresa. Por favor, tente novamente mais tarde.')
     }
-  }
+  };
+
+  useEffect(() => {
+    fetchEmpresas()
+  }, [page, appliedSearch])
+
 
   return (
     <div className="App">
       
       {loading && <p>Carregando...</p>}
       {error && <p style={{ color: 'red' }}>{error}</p>}
+
+      <form 
+      className="search-form" 
+      onSubmit={(e) => {
+        e.preventDefault()
+        handleSearch()
+      }}>
+        
+        <input
+          className="search-input"
+          type="text"
+          placeholder="Pesquisar por Razão Social ou CNPJ"
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
+        />
+
+        <button className="search-button" type="submit">
+          Pesquisar
+        </button>
+
+        {appliedSearch && (
+          <button 
+            className="clear-button"
+            type="button"
+            onClick={() => {
+              setAppliedSearch('')
+              setSearchInput('')
+              setPage(1)
+            }}
+          >
+            Limpar
+          </button>
+        )}
+
+      </form>
       
       {!loading && !error && (
         <table>
