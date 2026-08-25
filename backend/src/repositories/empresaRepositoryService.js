@@ -1,10 +1,20 @@
 import { queryDatabase } from './db.js';
 
-export async function findAll(limit, skip) {
-    const empresas = await queryDatabase(
-        'SELECT FIRST ? SKIP ? ID, INSCRICAO_ESTADUAL, CNPJ, RAZAO_SOCIAL, REGIME_TRIBUTARIO, CNAE FROM EMPRESAS ORDER BY ID ASC',
-        [limit, skip]
-    );
+export async function findAll(limit, skip, search = '') {
+    
+    let query = 'SELECT FIRST ? SKIP ? ID, INSCRICAO_ESTADUAL, CNPJ, RAZAO_SOCIAL, REGIME_TRIBUTARIO, CNAE FROM EMPRESAS';
+    const params = [limit, skip];
+
+    if (search && search.trim() !== '') {
+        const term = `%${search.trim().toUpperCase()}%`;
+
+        query += ' WHERE UPPER(RAZAO_SOCIAL) LIKE ? OR CNPJ LIKE ?';
+        params.push(term, term);
+    }
+
+    query += ' ORDER BY ID';
+    
+    const empresas = await queryDatabase(query, params);
     return empresas;
 }
 

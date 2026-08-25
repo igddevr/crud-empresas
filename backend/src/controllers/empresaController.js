@@ -3,18 +3,19 @@ import { findAll, findById, createEmpresa as createEmpresaRepo, updateEmpresa as
 export const getEmpresas = async (req, res) => {
     try {
         
-        const { page = 1, limit = 20 } = req.query;
+        const { page = 1, limit = 20, search } = req.query;
 
         const pageCount = parseInt(page);
         const limitCount = parseInt(limit);
 
         const skipCount = (pageCount - 1) * limitCount;
 
-        const empresas = await findAll(limitCount, skipCount);
+        const empresas = await findAll(limitCount, skipCount, search);
         
         return res.status(200).json({
             "page": pageCount,
             "limit": limitCount,
+            "search": search,
             "data": empresas
         });
     
