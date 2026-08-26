@@ -137,12 +137,34 @@
   }
 }
 
+.header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 16px 0;
+  margin-bottom: 24px;  
+}
+
 .search-form {
+  grid-column: 2;
   display: flex;
   justify-content: center;
   gap: 8px;
   margin-bottom: 20px;
   margin-top: 20px;
+}
+
+.add-button {
+  grid-column: 3;
+  justify-self: end;
+  padding: 8px 16px;
+  margin-right: 26px;
+  background-color: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
 }
 
 .search-input {
@@ -229,6 +251,100 @@ tbody tr:hover {
 .pagination button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* Notificação de Sucesso (Toast) */
+.toast-success {
+  background-color: #10b981;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* Fundo escuro fixo atrás do modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+/* Caixa branca/escura centralizada */
+.modal-content {
+  background-color: #1e1e1e;
+  padding: 24px;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  border: 1px solid #333;
+}
+
+.modal-content h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+  text-align: left;
+}
+
+.form-group label {
+  font-size: 13px;
+  color: #aaa;
+}
+
+.select-regime {
+    padding: 8px 12px;
+    background-color: #121212;
+    border: 1px solid #444;
+    border-radius: 4px;
+    color: #fff;
+}
+
+.form-group input {
+  padding: 8px 12px;
+  background-color: #121212;
+  border: 1px solid #444;
+  border-radius: 4px;
+  color: #fff;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.btn-cancel {
+  padding: 8px 16px;
+  background-color: transparent;
+  border: 1px solid #555;
+  color: #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-save {
+  padding: 8px 16px;
+  background-color: #2563eb;
+  border: none;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
 }
 
 @media (max-width: 1024px) {
