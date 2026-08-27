@@ -156,7 +156,7 @@
 
 .add-button {
   grid-column: 3;
-  justify-self: end;
+  justify-self: center;
   padding: 8px 16px;
   margin-right: 26px;
   background-color: #2563eb;
@@ -231,6 +231,26 @@ tbody tr:hover {
   background-color: rgba(255, 255, 255, 0.05);
 }
 
+.btn-delete {
+  padding: 3px 6px;
+  background-color: #be2d2d; 
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 4px;
+}
+
+.btn-edit {
+  padding: 3px 6px;
+  background-color: #b4b100; 
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 4px;
+}
+
 .pagination {
   display: flex;
   justify-content: center;
@@ -253,7 +273,6 @@ tbody tr:hover {
   cursor: not-allowed;
 }
 
-/* Notificação de Sucesso (Toast) */
 .toast-success {
   background-color: #10b981;
   color: white;
@@ -264,7 +283,6 @@ tbody tr:hover {
   text-align: center;
 }
 
-/* Fundo escuro fixo atrás do modal */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -275,7 +293,6 @@ tbody tr:hover {
   z-index: 999;
 }
 
-/* Caixa branca/escura centralizada */
 .modal-content {
   background-color: #1e1e1e;
   padding: 24px;

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import api from './services/api'
 import './App.css'
 
-import { Trash2 } from 'lucide-react';
+import { Trash2, Pencil } from 'lucide-react';
 
 function App() {
   const [empresas, setEmpresas] = useState([])
@@ -13,6 +13,7 @@ function App() {
   const [appliedSearch, setAppliedSearch] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [successMessage, setSuccessMessage] = useState(null);
+  const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState({
     razaoSocial: '',
     cnpj: '',
@@ -29,7 +30,7 @@ function App() {
       const response = await api.get(`/empresas?page=${page}&limit=20&search=${appliedSearch}`)
       setEmpresas(response.data.data)
     } catch (err) {
-      setError('Erro ao buscar empresas. Por favor, tente novamente mais tarde.')
+      setError('Erro ao buscar empresas. Por favor, tente novamente.')
     } finally {
       setLoading(false)
     }
@@ -58,9 +59,16 @@ function App() {
     }
 
     try {
-      await api.post('/empresas', formData)
+      if (editingId) {
+        await api.put(`/empresas/${editingId}`, formData)
+        setSuccessMessage('Empresa atualizada com sucesso!')
+      } else {
+        await api.post('/empresas', formData)
+        setSuccessMessage('Empresa cadastrada com sucesso!')
+      }
 
       setIsModalOpen(false)
+      setEditingId(null)
       setFormData({
         razaoSocial: '',
         cnpj: '',
@@ -69,12 +77,23 @@ function App() {
         cnae: ''
       });
 
-      setSuccessMessage('Empresa cadastrada com sucesso!')
       setTimeout(() => setSuccessMessage(null), 3000)
       fetchEmpresas()
     } catch (err) {
-      setError('Erro ao cadastrar empresa. Por favor, tente novamente mais tarde.')
+      setError('Erro ao cadastrar empresa. Por favor, tente novamente')
     }
+  };
+
+  function handleEdit(empresa) {
+    setEditingId(empresa.ID);
+    setFormData({
+      razaoSocial: empresa.RAZAO_SOCIAL || '',
+      cnpj: empresa.CNPJ || '',
+      inscricaoEstadual: empresa.INSCRICAO_ESTADUAL || '',
+      regimeTributario: empresa.REGIME_TRIBUTARIO || '',
+      cnae: empresa.CNAE || ''
+    });
+    setIsModalOpen(true);
   };
   
   async function handleDelete(id) {
@@ -86,7 +105,7 @@ function App() {
       await api.delete(`/empresas/${id}`)
       fetchEmpresas()
     } catch (err) {
-      setError('Erro ao excluir empresa. Por favor, tente novamente mais tarde.')
+      setError('Erro ao excluir empresa. Por favor, tente novamente.')
     }
   };
 
@@ -102,7 +121,7 @@ function App() {
       {isModalOpen && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <h2>Cadastrar Nova Empresa</h2>
+            <h2>{editingId ? 'Editar Empresa' : 'Adicionar Empresa'}</h2>
             
             <form onSubmit={handleSubmit}>
               <div className="form-group">
@@ -165,7 +184,7 @@ function App() {
                   Cancelar
                 </button>
                 <button type="submit" className="btn-save">
-                  Salvar
+                  {editingId ? 'Atualizar' : 'Salvar'}
                 </button>
               </div>
             </form>
@@ -213,7 +232,17 @@ function App() {
         </form>
 
         <button className="add-button"
-        onClick={() => setIsModalOpen(true)}
+        onClick={() => {
+          setIsModalOpen(true)
+          setEditingId(null)
+          setFormData({
+            razaoSocial: '',
+            cnpj: '',
+            inscricaoEstadual: '',
+            regimeTributario: '',
+            cnae: ''
+          })
+        }}
       >
         + Adicionar Empresa
       </button>
@@ -243,8 +272,26 @@ function App() {
                 <td>{empresa.REGIME_TRIBUTARIO}</td>
                 <td>{empresa.CNAE}</td>
                 <td>
-                  <button onClick={() => handleDelete(empresa.ID)}>
+                  <button 
+                  className="btn-delete" 
+                  onClick={() => handleDelete(empresa.ID)}>
                     <Trash2 />
+                  </button>
+                  
+                  <button
+                  className="btn-edit"
+                  onClick={() => {
+                    setIsModalOpen(true)
+                    setEditingId(empresa.ID)
+                    setFormData({
+                      razaoSocial: empresa.RAZAO_SOCIAL,
+                      cnpj: empresa.CNPJ,
+                      inscricaoEstadual: empresa.INSCRICAO_ESTADUAL,
+                      regimeTributario: empresa.REGIME_TRIBUTARIO,
+                      cnae: empresa.CNAE
+                    })
+                  }}>
+                    <Pencil />
                   </button>
                 </td>
               </tr>
