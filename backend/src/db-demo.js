@@ -38,7 +38,7 @@ if (count === 0) {
       "COMERCIO DE ALIMENTOS MINAS S.A.",
       "98765432000109",
       "9876543210",
-      "L",
+      "H",
       "4711-3/02",
     ],
     [
@@ -52,7 +52,7 @@ if (count === 0) {
       "LOGISTICA EXPRESS SUL EIRELI",
       "78912345000167",
       "3495820193",
-      "P",
+      "H",
       "4930-2/02",
     ],
     [
