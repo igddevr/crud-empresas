@@ -5,42 +5,20 @@ export const findAll = async (limit, skip, search) => {
     "SELECT ID, RAZAO_SOCIAL, CNPJ, INSCRICAO_ESTADUAL, REGIME_TRIBUTARIO, CNAE FROM EMPRESAS";
   const params = [];
 
-  if (search) {
-    query += " WHERE RAZAO_SOCIAL LIKE ? OR CNPJ LIKE ?";
-    params.push(`%${search}%`, `%${search}%`);
+  if (search && search.trim() !== "") {
+    query += " WHERE UPPER(RAZAO_SOCIAL) LIKE ? OR CNPJ LIKE ?";
+    const term = `%${search.trim().toUpperCase()}%`;
+    params.push(term, term);
   }
 
-  query += " ORDER BY ID DESC LIMIT ? OFFSET ?";
+  query += " ORDER BY ID ASC LIMIT ? OFFSET ?";
   params.push(limit, skip);
 
-  const rows = db.prepare(query).all(...params);
-
-  return rows.map((row) => ({
-    id: row.ID,
-    razaoSocial: row.RAZAO_SOCIAL,
-    cnpj: row.CNPJ,
-    inscricaoEstadual: row.INSCRICAO_ESTADUAL,
-    regimeTributario: row.REGIME_TRIBUTARIO,
-    cnae: row.CNAE,
-  }));
+  return db.prepare(query).all(...params);
 };
 
 export const findById = async (id) => {
-  const row = db
-    .prepare(
-      "SELECT ID, RAZAO_SOCIAL, CNPJ, INSCRICAO_ESTADUAL, REGIME_TRIBUTARIO, CNAE FROM EMPRESAS WHERE ID = ?",
-    )
-    .get(id);
-  if (!row) return null;
-
-  return {
-    id: row.ID,
-    razaoSocial: row.RAZAO_SOCIAL,
-    cnpj: row.CNPJ,
-    inscricaoEstadual: row.INSCRICAO_ESTADUAL,
-    regimeTributario: row.REGIME_TRIBUTARIO,
-    cnae: row.CNAE,
-  };
+  return db.prepare("SELECT * FROM EMPRESAS WHERE ID = ?").get(id) || null;
 };
 
 export const createEmpresa = async (dados) => {
@@ -49,11 +27,11 @@ export const createEmpresa = async (dados) => {
     VALUES (?, ?, ?, ?, ?)
   `);
   const info = stmt.run(
-    dados.razaoSocial,
-    dados.cnpj,
-    dados.inscricaoEstadual,
-    dados.regimeTributario,
-    dados.cnae,
+    dados.razaoSocial || dados.RAZAO_SOCIAL,
+    dados.cnpj || dados.CNPJ,
+    dados.inscricaoEstadual || dados.INSCRICAO_ESTADUAL,
+    dados.regimeTributario || dados.REGIME_TRIBUTARIO,
+    dados.cnae || dados.CNAE,
   );
   return info.lastInsertRowid;
 };
@@ -65,11 +43,11 @@ export const updateEmpresa = async (id, dados) => {
     WHERE ID = ?
   `);
   stmt.run(
-    dados.razaoSocial,
-    dados.cnpj,
-    dados.inscricaoEstadual,
-    dados.regimeTributario,
-    dados.cnae,
+    dados.razaoSocial || dados.RAZAO_SOCIAL,
+    dados.cnpj || dados.CNPJ,
+    dados.inscricaoEstadual || dados.INSCRICAO_ESTADUAL,
+    dados.regimeTributario || dados.REGIME_TRIBUTARIO,
+    dados.cnae || dados.CNAE,
     id,
   );
   return true;
