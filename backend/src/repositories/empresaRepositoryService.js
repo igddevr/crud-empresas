@@ -1,48 +1,70 @@
-import { queryDatabase } from './db.js';
+import { queryDatabase } from "./db.js";
+import * as sqliteRepo from "./empresaRepositorySqlite.js";
 
-export async function findAll(limit, skip, search = '') {
-    
-    let query = 'SELECT FIRST ? SKIP ? ID, INSCRICAO_ESTADUAL, CNPJ, RAZAO_SOCIAL, REGIME_TRIBUTARIO, CNAE FROM EMPRESAS';
-    const params = [limit, skip];
+const isDemo = process.env.USE_DEMO_DB === "true" || !process.env.DB_HOST;
 
-    if (search && search.trim() !== '') {
-        const term = `%${search.trim().toUpperCase()}%`;
+export async function findAll(limit, skip, search = "") {
+  if (isDemo) {
+    return sqliteRepo.findAll(limit, skip, search);
+  }
 
-        query += ' WHERE UPPER(RAZAO_SOCIAL) LIKE ? OR CNPJ LIKE ?';
-        params.push(term, term);
-    }
+  let query =
+    "SELECT FIRST ? SKIP ? ID, INSCRICAO_ESTADUAL, CNPJ, RAZAO_SOCIAL, REGIME_TRIBUTARIO, CNAE FROM EMPRESAS";
+  const params = [limit, skip];
 
-    query += ' ORDER BY ID';
-    
-    const empresas = await queryDatabase(query, params);
-    return empresas;
+  if (search && search.trim() !== "") {
+    const term = `%${search.trim().toUpperCase()}%`;
+    query += " WHERE UPPER(RAZAO_SOCIAL) LIKE ? OR CNPJ LIKE ?";
+    params.push(term, term);
+  }
+
+  query += " ORDER BY ID";
+
+  const empresas = await queryDatabase(query, params);
+  return empresas;
 }
 
 export async function findById(id) {
-    const result = await queryDatabase('SELECT * FROM EMPRESAS WHERE ID = ?', [id]);
-    return result[0] || null;
+  if (isDemo) {
+    return sqliteRepo.findById(id);
+  }
+
+  const result = await queryDatabase("SELECT * FROM EMPRESAS WHERE ID = ?", [
+    id,
+  ]);
+  return result[0] || null;
 }
 
 export async function createEmpresa(empresa) {
-    const genResult = await queryDatabase('SELECT GEN_ID(GEN_EMPRESAS_ID, 1) AS ID FROM RDB$DATABASE');
-    const newId = genResult[0].ID;
-    
-    const insert = await queryDatabase(
-        'INSERT INTO EMPRESAS (ID, INSCRICAO_ESTADUAL, CNPJ, RAZAO_SOCIAL, REGIME_TRIBUTARIO, CNAE) VALUES (?, ?, ?, ?, ?, ?)',
-        [
-            newId, 
-            empresa.inscricaoEstadual, 
-            empresa.cnpj, 
-            empresa.razaoSocial, 
-            empresa.regimeTributario, 
-            empresa.cnae
-        ]
-    );
-    return newId;
+  if (isDemo) {
+    return sqliteRepo.createEmpresa(empresa);
+  }
+
+  const genResult = await queryDatabase(
+    "SELECT GEN_ID(GEN_EMPRESAS_ID, 1) AS ID FROM RDB$DATABASE",
+  );
+  const newId = genResult[0].ID;
+
+  await queryDatabase(
+    "INSERT INTO EMPRESAS (ID, INSCRICAO_ESTADUAL, CNPJ, RAZAO_SOCIAL, REGIME_TRIBUTARIO, CNAE) VALUES (?, ?, ?, ?, ?, ?)",
+    [
+      newId,
+      empresa.inscricaoEstadual,
+      empresa.cnpj,
+      empresa.razaoSocial,
+      empresa.regimeTributario,
+      empresa.cnae,
+    ],
+  );
+  return newId;
 }
 
 export async function updateEmpresa(id, empresa) {
-    const query = `
+  if (isDemo) {
+    return sqliteRepo.updateEmpresa(id, empresa);
+  }
+
+  const query = `
         UPDATE EMPRESAS 
         SET INSCRICAO_ESTADUAL = ?, 
             CNPJ = ?, 
@@ -52,19 +74,23 @@ export async function updateEmpresa(id, empresa) {
         WHERE ID = ?
     `;
 
-    const result = await queryDatabase(query, [
-        empresa.inscricaoEstadual,
-        empresa.cnpj,
-        empresa.razaoSocial,
-        empresa.regimeTributario,
-        empresa.cnae,
-        id
-    ]);
+  const result = await queryDatabase(query, [
+    empresa.inscricaoEstadual,
+    empresa.cnpj,
+    empresa.razaoSocial,
+    empresa.regimeTributario,
+    empresa.cnae,
+    id,
+  ]);
 
-    return result;
+  return result;
 }
 
 export async function deleteEmpresa(id) {
-    const query = 'DELETE FROM EMPRESAS WHERE ID = ?';
-    return await queryDatabase(query, [id]);
+  if (isDemo) {
+    return sqliteRepo.deleteEmpresa(id);
+  }
+
+  const query = "DELETE FROM EMPRESAS WHERE ID = ?";
+  return await queryDatabase(query, [id]);
 }
