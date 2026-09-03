@@ -20,17 +20,10 @@ O sistema foi estruturado com separação clara de responsabilidades:
 3. **Persistência de Dados Híbrida (Repository Pattern):**
    - **Ambiente de Demonstração (Cloud):** Base SQLite (`better-sqlite3`) inicializada e populada automaticamente em arquivo local com dados fictícios para viabilizar testes públicos com custo zero e segurança.
    - **Ambiente Corporativo (On-Premises):** Integração com banco legado Firebird 2.5 via driver nativo, mantendo a compatibilidade de regras e nomenclatura de tabelas.
+     
 
-[ Usuário / Navegador ]
-│
-▼
-[ Frontend - Vercel ] (React + Vite - Dark Mode)
-│
-▼ (Chamadas REST / Axios)
-[ Backend API - Render ] (Node.js + Express)
-│
-├──> [Cloud Demo]: SQLite (better-sqlite3) -> demo.db
-└──> [Local / On-Premises]: Driver nativo Firebird 2.5
+<img width="495" height="261" alt="image" src="https://github.com/user-attachments/assets/5c231e37-1230-484d-aff4-d5f7b1b145fc" />
+
 
 ---
 
