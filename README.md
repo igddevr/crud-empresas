@@ -16,7 +16,9 @@ Aplicação corporativa Full Stack desenvolvida para cadastro, consulta, ediçã
 O sistema foi estruturado com separação clara de responsabilidades:
 
 1. **Frontend (Vercel):** Single Page Application (SPA) desenvolvida com React e Vite, hospedada com distribuição global via CDN e comunicação HTTPS.
+   
 2. **Backend (Render):** API RESTful em Node.js e Express, com suporte a CORS e modularização de rotas e controllers.
+   
 3. **Persistência de Dados Híbrida (Repository Pattern):**
    - **Ambiente de Demonstração (Cloud):** Base SQLite (`better-sqlite3`) inicializada e populada automaticamente em arquivo local com dados fictícios para viabilizar testes públicos com custo zero e segurança.
    - **Ambiente Corporativo (On-Premises):** Integração com banco legado Firebird 2.5 via driver nativo, mantendo a compatibilidade de regras e nomenclatura de tabelas.
