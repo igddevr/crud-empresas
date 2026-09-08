@@ -72,19 +72,19 @@ Git
 ### 1. Clonar o projeto
 
 git clone https://github.com/igddevr/crud-empresas.git
---
+<b>
 cd crud-empresas
 
 ### 2. Configurar e rodar o Backend
 
 cd backend
---
+<br>
 npm install
 
 Crie o arquivo .env na pasta backend/:
 
 PORT=3000
---
+<br>
 USE_DEMO_DB=true
 
 Inicie o servidor:
@@ -98,9 +98,9 @@ O SQLite criará o arquivo demo.db e carregará as empresas demonstrativas autom
 Abra outro terminal e acesse a pasta do cliente:
 
 cd frontend
---
+
 npm install
---
+<br>
 npm run dev
 
 Abra o navegador no endereço indicado (por padrão http://localhost:5173).
