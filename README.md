@@ -20,7 +20,7 @@ O sistema foi estruturado com separação clara de responsabilidades:
 2. **Backend (Render):** API RESTful em Node.js e Express, com suporte a CORS e modularização de rotas e controllers.
    
 3. **Persistência de Dados Híbrida (Repository Pattern):**
-   - **Ambiente de Demonstração (Cloud):** Base SQLite (`better-sqlite3`) inicializada e populada automaticamente em arquivo local com dados fictícios para viabilizar testes públicos com custo zero e segurança.
+   - **Ambiente de Demonstração (Cloud):** Base SQLite (`sqlite3`) inicializada e populada automaticamente em arquivo local com dados fictícios para viabilizar testes públicos com custo zero e segurança.
    - **Ambiente Corporativo (On-Premises):** Integração com banco legado Firebird 2.5 via driver nativo, mantendo a compatibilidade de regras e nomenclatura de tabelas.
      
 
@@ -46,7 +46,7 @@ O sistema foi estruturado com separação clara de responsabilidades:
 
 ### Bancos de Dados
 
-- **SQLite (better-sqlite3):** Utilizado em produção na nuvem com transações atômicas e migração automática na inicialização.
+- **SQLite (sqlite3):** Utilizado em produção na nuvem com transações atômicas e migração automática na inicialização.
 - **Firebird 2.5:** Banco relacional configurado para o cenário de execução corporativa interna.
 
 ---
