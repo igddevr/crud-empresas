@@ -72,7 +72,7 @@ Git
 ### 1. Clonar o projeto
 
 git clone https://github.com/igddevr/crud-empresas.git
-<b>
+<br>
 cd crud-empresas
 
 ### 2. Configurar e rodar o Backend
