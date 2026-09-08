@@ -82,6 +82,7 @@ npm install
 Crie o arquivo .env na pasta backend/:
 
 PORT=3000
+
 USE_DEMO_DB=true
 
 Inicie o servidor:
