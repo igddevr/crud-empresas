@@ -74,6 +74,13 @@ export const createEmpresa = async (req, res) => {
         });
     } catch (error) {
         console.error('Erro ao criar empresa:', error);
+
+        if (error.code === 'SQLITE_CONSTRAINT' || error.message?.includes('UNIQUE')) {
+            return res.status(409).json({
+                error: 'Já existe uma empresa cadastrada com este CNPJ.'
+            });
+        }
+
         return res.status(500).json({
             error: 'Erro ao criar empresa no banco de dados.'
         });

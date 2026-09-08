@@ -1,32 +1,40 @@
-import Database from "better-sqlite3";
+import sqlite3 from "sqlite3";
 import path from "path";
+import fs from "fs";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const db = new Database(path.join(__dirname, "demo.db"));
+const dbDir = path.resolve(__dirname, '..');
+const dbPath = path.join(dbDir, 'demo.db');
 
-db.exec(`
-  CREATE TABLE IF NOT EXISTS EMPRESAS (
-    ID INTEGER PRIMARY KEY AUTOINCREMENT,
-    RAZAO_SOCIAL TEXT NOT NULL,
-    CNPJ TEXT NOT NULL,
-    INSCRICAO_ESTADUAL TEXT,
-    REGIME_TRIBUTARIO TEXT,
-    CNAE TEXT
-  )
-`);
+const rawDb = new sqlite3.Database(dbPath, (err) => {
+  if (err) {
+    console.error("Erro ao conectar ao banco de dados SQLite:", err.message);
+  }
+});
 
-const count = db.prepare("SELECT COUNT(*) as total FROM EMPRESAS").get().total;
-
-if (count === 0) {
-  const insert = db.prepare(`
-    INSERT INTO EMPRESAS (RAZAO_SOCIAL, CNPJ, INSCRICAO_ESTADUAL, REGIME_TRIBUTARIO, CNAE)
-    VALUES (?, ?, ?, ?, ?)
+rawDb.serialize(() => {
+  rawDb.run(`
+    CREATE TABLE IF NOT EXISTS EMPRESAS (
+      ID INTEGER PRIMARY KEY AUTOINCREMENT,
+      RAZAO_SOCIAL TEXT NOT NULL,
+      CNPJ TEXT NOT NULL UNIQUE,
+      INSCRICAO_ESTADUAL TEXT NOT NULL,
+      REGIME_TRIBUTARIO TEXT NOT NULL,
+      CNAE TEXT NOT NULL
+    )
   `);
 
-  const empresasExemplo = [
+rawDb.get('SELECT COUNT(*) as count FROM EMPRESAS', (err, row) => {
+    if (!err && row && row.count === 0) {
+      const stmt = rawDb.prepare(`
+        INSERT INTO EMPRESAS (RAZAO_SOCIAL, CNPJ, INSCRICAO_ESTADUAL, REGIME_TRIBUTARIO, CNAE)
+        VALUES (?, ?, ?, ?, ?)
+      `);
+
+  const empresasIniciais = [
     [
       "TECH SOLUTIONS BRASIL LTDA",
       "12345678000190",
@@ -64,12 +72,44 @@ if (count === 0) {
     ],
   ];
 
-  const insertMany = db.transaction((empresas) => {
-    for (const emp of empresas) insert.run(...emp);
+  for (const emp of empresasIniciais) {
+        stmt.run(emp);
+      }
+      stmt.finalize();
+      console.log('Base demo SQLite inicializada com sucesso!');
+    }
   });
+});
 
-  insertMany(empresasExemplo);
-  console.log("Base demo SQLite inicilizada com sucesso!");
-}
+const db = {
+  prepare(sql) {
+    return {
+      all(...params) {
+        return new Promise((resolve, reject) => {
+          rawDb.all(sql, params, (err, rows) => {
+            if (err) reject(err);
+            else resolve(rows || []);
+          });
+        });
+      },
+      get(...params) {
+        return new Promise((resolve, reject) => {
+          rawDb.get(sql, params, (err, row) => {
+            if (err) reject(err);
+            else resolve(row || null);
+          });
+        });
+      },
+      run(...params) {
+        return new Promise((resolve, reject) => {
+          rawDb.run(sql, params, function (err) {
+            if (err) reject(err);
+            else resolve({ lastInsertRowid: this.lastID, changes: this.changes });
+          });
+        });
+      }
+    };
+  }
+};
 
 export default db;

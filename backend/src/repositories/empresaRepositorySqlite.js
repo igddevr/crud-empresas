@@ -14,11 +14,11 @@ export const findAll = async (limit, skip, search) => {
   query += " ORDER BY ID ASC LIMIT ? OFFSET ?";
   params.push(limit, skip);
 
-  return db.prepare(query).all(...params);
+  return await db.prepare(query).all(...params);
 };
 
 export const findById = async (id) => {
-  return db.prepare("SELECT * FROM EMPRESAS WHERE ID = ?").get(id) || null;
+  return await db.prepare("SELECT * FROM EMPRESAS WHERE ID = ?").get(id) || null;
 };
 
 export const createEmpresa = async (dados) => {
@@ -26,7 +26,7 @@ export const createEmpresa = async (dados) => {
     INSERT INTO EMPRESAS (RAZAO_SOCIAL, CNPJ, INSCRICAO_ESTADUAL, REGIME_TRIBUTARIO, CNAE)
     VALUES (?, ?, ?, ?, ?)
   `);
-  const info = stmt.run(
+  const info = await stmt.run(
     dados.razaoSocial || dados.RAZAO_SOCIAL,
     dados.cnpj || dados.CNPJ,
     dados.inscricaoEstadual || dados.INSCRICAO_ESTADUAL,
@@ -42,7 +42,7 @@ export const updateEmpresa = async (id, dados) => {
     SET RAZAO_SOCIAL = ?, CNPJ = ?, INSCRICAO_ESTADUAL = ?, REGIME_TRIBUTARIO = ?, CNAE = ?
     WHERE ID = ?
   `);
-  stmt.run(
+  await stmt.run(
     dados.razaoSocial || dados.RAZAO_SOCIAL,
     dados.cnpj || dados.CNPJ,
     dados.inscricaoEstadual || dados.INSCRICAO_ESTADUAL,
@@ -55,6 +55,6 @@ export const updateEmpresa = async (id, dados) => {
 
 export const deleteEmpresa = async (id) => {
   const stmt = db.prepare("DELETE FROM EMPRESAS WHERE ID = ?");
-  stmt.run(id);
+  await stmt.run(id);
   return true;
 };
